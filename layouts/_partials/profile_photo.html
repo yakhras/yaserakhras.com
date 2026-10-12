@@ -1,0 +1,8 @@
+{{- /* Round profile photo from assets/images/photo.jpg. Input: dict "size" (CSS px) "class". */ -}}
+{{- with resources.Get "images/photo.jpg" }}
+{{- $size := $.size | default 140 }}
+{{- $1x := .Fill (printf "%dx%d webp q85" $size $size) }}
+{{- $2x := .Fill (printf "%dx%d webp q85" (math.Min (mul $size 2) .Width | int) (math.Min (mul $size 2) .Height | int)) }}
+<img class="profile-photo {{ $.class }}" src="{{ $1x.RelPermalink }}" srcset="{{ $1x.RelPermalink }} 1x, {{ $2x.RelPermalink }} 2x"
+     width="{{ $size }}" height="{{ $size }}" alt="Yaser Akhras">
+{{- end }}

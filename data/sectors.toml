@@ -1,0 +1,26 @@
+# Sectors shown as logo cards on the home page, in this order.
+# path  = the sector's section; the card links there once the section is published
+#         (draft: false), otherwise it shows as "coming soon".
+# icons = files in assets/sectors/ (logos from simple-icons 16.35.0, CC0) + brand colour used on hover;
+#         wide = true for wordmark logos.
+
+[[sector]]
+  name = "ERP"
+  path = "/erp"
+  # Odoo's logo is a wide wordmark in a square viewBox: widen it to match the others' visual weight.
+  icons = [ { file = "odoo.svg", color = "#714B67", wide = true } ]
+
+[[sector]]
+  name = "Linux / Red Hat"
+  path = "/linux"
+  icons = [ { file = "linux.svg", color = "#FCC624" }, { file = "redhat.svg", color = "#EE0000" } ]
+
+[[sector]]
+  name = "Networking"
+  path = "/networking"
+  icons = [ { file = "network.svg", color = "#049FD9" } ]
+
+[[sector]]
+  name = "Programming"
+  path = "/programming"
+  icons = [ { file = "c.svg", color = "#A8B9CC" }, { file = "cplusplus.svg", color = "#00599C" }, { file = "python.svg", color = "#3776AB" } ]

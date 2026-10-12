@@ -1,9 +1,12 @@
 ---
 title: "About"
 showDate: false
+menus:
+  main:
+    weight: 90
 ---
 
-<!-- TODO: replace with your own bio. -->
+{{< photo >}}
 
-Odoo developer building custom modules and API integrations.
-Each module lives in its own repository on [GitHub](https://github.com/yakhras).
+Passionate about infrastructure: ERP development, Linux / Red Hat systems, networking and
+programming in C, C++ and Python.

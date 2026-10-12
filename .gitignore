@@ -2,3 +2,6 @@ public/
 resources/_gen/
 .hugo_build.lock
 *.stackdump
+.venv/
+.pytest_cache/
+__pycache__/

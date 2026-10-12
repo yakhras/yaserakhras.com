@@ -2,7 +2,8 @@
 title: "SPT: Syrian Pound Exchange Rates for Odoo"
 summary: "Keeps Syrian Pound (SYP) exchange rates in Odoo up to date from Syrian market providers (SP Today)."
 date: 2026-10-09
-tags: ["odoo", "accounting", "api"]
+tags: ["odoo", "accounting", "api", "python"]
+aliases: ["/projects/spt/", "/odoo/spt/"]
 cover:
   image: "feature.png"
   alt: "SPT provider form"

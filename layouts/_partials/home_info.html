@@ -1,0 +1,33 @@
+{{- /* Overrides PaperMod's home_info: sector logo cards instead of intro text. */ -}}
+{{- with site.Params.homeInfoParams }}
+<article class="first-entry home-info">
+    <header class="entry-header home-header">
+        {{- /* Name is already in the site header, so the page heading is for screen readers and search engines only. */}}
+        <h1 class="visually-hidden">{{ .Title | markdownify }}</h1>
+        {{ partial "profile_photo.html" (dict "size" 140 "class" "profile-photo-home") }}
+    </header>
+    <div class="sector-grid">
+        {{- range site.Data.sectors.sector }}
+        {{- /* A draft section still resolves, but has no permalink: treat it as coming soon. */}}
+        {{- $url := "" }}
+        {{- with site.GetPage .path }}{{ $url = .RelPermalink }}{{ end }}
+        {{- $logos := partial "sector_logos.html" .icons }}
+        {{- if $url }}
+        <a class="sector-card" href="{{ $url }}" title="{{ .name }}">
+            <span class="sector-logos">{{ $logos }}</span>
+            <span class="sector-name">{{ .name }}</span>
+        </a>
+        {{- else }}
+        <div class="sector-card sector-soon" title="{{ .name }}: coming soon">
+            <span class="sector-logos">{{ $logos }}</span>
+            <span class="sector-name">{{ .name }}</span>
+            <span class="sector-badge">coming soon</span>
+        </div>
+        {{- end }}
+        {{- end }}
+    </div>
+    <footer class="entry-footer">
+        {{ partial "social_icons.html" (dict "align" site.Params.homeInfoParams.AlignSocialIconsTo) }}
+    </footer>
+</article>
+{{- end -}}

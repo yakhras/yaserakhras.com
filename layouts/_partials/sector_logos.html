@@ -1,0 +1,8 @@
+{{- /* Inline SVG logos for one sector card. Input: list of {file, color}. */ -}}
+{{- range . }}
+{{- $color := .color | default "currentColor" }}
+{{- $wide := .wide }}
+{{- with resources.Get (printf "sectors/%s" .file) }}
+<span class="sector-logo{{ if $wide }} sector-logo-wide{{ end }}" style="--brand: {{ $color | safeCSS }}">{{ .Content | safeHTML }}</span>
+{{- end }}
+{{- end }}

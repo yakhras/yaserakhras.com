@@ -4,18 +4,14 @@ title = "Yaser Akhras"
 theme = "PaperMod"
 enableRobotsTXT = true
 
+# Site map: one top-level folder per sector (content/erp, linux, networking, programming).
+# Menu entries are set in each sector's _index.md, so a sector kept as draft stays out of the menu.
+
 [pagination]
   pagerSize = 10
 
-[[menus.main]]
-  name = "Projects"
-  pageRef = "/projects"
-  weight = 10
-
-[[menus.main]]
-  name = "About"
-  pageRef = "/about"
-  weight = 20
+[taxonomies]
+  tag = "tags"
 
 [markup.goldmark.renderer]
   unsafe = false
@@ -25,14 +21,22 @@ enableRobotsTXT = true
   ShowReadingTime = false
   ShowBreadCrumbs = true
   ShowPostNavLinks = true
+  # Home page shows only the photo and sector cards: no recent-items list.
+  # (PaperMod lists the pages of these sections on the home page.)
+  mainSections = []
 
   [params.homeInfoParams]
     Title = "Yaser Akhras"
-    Content = "Odoo developer. Custom modules and integrations, each in its own repository."
+    AlignSocialIconsTo = "center"
+    # Body is the sector logo grid: data/sectors.toml + layouts/_partials/home_info.html
 
   [[params.socialIcons]]
     name = "github"
     url = "https://github.com/yakhras"
+
+  [[params.socialIcons]]
+    name = "email"
+    url = "mailto:yaser.m.m.as@gmail.com"
 
   [params.cover]
     hiddenInList = false
