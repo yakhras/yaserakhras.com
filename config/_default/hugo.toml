@@ -1,0 +1,38 @@
+baseURL = "https://yaserakhras.com/"
+locale = "en-us"
+title = "Yaser Akhras"
+theme = "PaperMod"
+enableRobotsTXT = true
+
+[pagination]
+  pagerSize = 10
+
+[[menus.main]]
+  name = "Projects"
+  pageRef = "/projects"
+  weight = 10
+
+[[menus.main]]
+  name = "About"
+  pageRef = "/about"
+  weight = 20
+
+[markup.goldmark.renderer]
+  unsafe = false
+
+[params]
+  defaultTheme = "auto"
+  ShowReadingTime = false
+  ShowBreadCrumbs = true
+  ShowPostNavLinks = true
+
+  [params.homeInfoParams]
+    Title = "Yaser Akhras"
+    Content = "Odoo developer. Custom modules and integrations, each in its own repository."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/yakhras"
+
+  [params.cover]
+    hiddenInList = false
