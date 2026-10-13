@@ -5,7 +5,7 @@ import re
 
 import pytest
 
-from conftest import page_file, parse_html, sectors
+from conftest import CONTENT, page_file, parse_html, read_page, sectors
 
 SITE = "https://yaserakhras.com"
 
@@ -96,18 +96,39 @@ def test_about_page(built_site):
                               "systems, networking and programming in C, C++ and Python.")
 
 
-def test_erp_section_lists_spt(built_site):
-    doc = parse_html(page_file(built_site, "/erp/"))
+def project_pages():
+    """URL paths of every published project page bundle (content/<sector>/.../<page>/index.md)."""
+    pages = []
+    for md in sorted(CONTENT.rglob("index.md")):
+        if md.parent.parent == CONTENT or read_page(md)[0].get("draft", False):
+            continue  # top-level pages (about) and drafts
+        pages.append("/" + md.parent.relative_to(CONTENT).as_posix() + "/")
+    return pages
+
+
+def test_project_pages_found():
+    assert "/erp/spt/" in project_pages()
+
+
+@pytest.mark.parametrize("path", project_pages())
+def test_project_page_is_listed_in_its_section(built_site, path):
+    section = path.rstrip("/").rsplit("/", 1)[0] + "/"
+    doc = parse_html(page_file(built_site, section))
     links = [a.attrs.get("href") for a in doc.find("main").find_all("a")]
-    assert f"{SITE}/erp/spt/" in links
+    assert f"{SITE}{path}" in links
 
 
-def test_spt_page_links_repo_and_shows_screenshots(built_site):
-    doc = parse_html(page_file(built_site, "/erp/spt/"))
+@pytest.mark.parametrize("path", project_pages())
+def test_project_page_links_repo_license_and_shows_screenshots(built_site, path):
+    doc = parse_html(page_file(built_site, path))
     content = doc.find("div", cls="post-content")
-    assert "https://github.com/yakhras/Odoo-SPT" in [a.attrs.get("href") for a in content.find_all("a")]
+    hrefs = [a.attrs.get("href") or "" for a in content.find_all("a")]
+    assert any(re.match(r"https://github\.com/yakhras/[\w.-]+$", h) for h in hrefs), "no repo link"
+    # raw HTML: Node.text() doesn't keep inline elements in order
+    raw = page_file(built_site, path).read_text(encoding="utf-8")
+    assert re.search(r"License:</strong>\s*(LGPL-3|AGPL-3|GPL-3|MIT|Apache-2\.0)\b", raw), "no license"
     images = content.find_all("img")
-    assert len(images) >= 4
+    assert images, "no screenshots"
     for img in images:
         assert page_file(built_site, local_path(img.attrs["src"]) or img.attrs["src"]) is not None
 
