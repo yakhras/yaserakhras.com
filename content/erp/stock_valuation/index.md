@@ -3,9 +3,6 @@ title: "Stock Valuation per Warehouse for Odoo"
 summary: "Values stock per warehouse in Odoo: each warehouse keeps its own average cost, with cost history, landed costs, revaluation and transfers between warehouses."
 date: 2026-10-13
 tags: ["odoo", "inventory", "accounting", "python"]
-cover:
-  image: "feature.png"
-  alt: "Stock list showing a different unit value for the same product in two warehouses"
 ---
 
 An Odoo module that values stock **per warehouse** instead of once per company. Standard Odoo

@@ -4,9 +4,6 @@ summary: "Keeps Syrian Pound (SYP) exchange rates in Odoo up to date from Syrian
 date: 2026-10-09
 tags: ["odoo", "accounting", "api", "python"]
 aliases: ["/projects/spt/", "/odoo/spt/"]
-cover:
-  image: "feature.png"
-  alt: "SPT provider form"
 ---
 
 Odoo API integration that keeps **Syrian Pound (SYP)** exchange rates up to date from Syrian
