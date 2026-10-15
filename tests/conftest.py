@@ -62,9 +62,9 @@ def published_regular_pages(directory):
 
 # ---------------------------------------------------------------- build
 
-def hugo_build(destination, drafts=False):
+def hugo_build(destination, drafts=False, environment="production"):
     args = [HUGO, "--source", str(ROOT), "--destination", str(destination),
-            "--environment", "production", "--minify", "--cleanDestinationDir"]
+            "--environment", environment, "--minify", "--cleanDestinationDir"]
     if drafts:
         args.append("--buildDrafts")
     result = subprocess.run(args, capture_output=True, text=True, encoding="utf-8")

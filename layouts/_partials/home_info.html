@@ -13,7 +13,7 @@
         {{- with site.GetPage .path }}{{ $url = .RelPermalink }}{{ end }}
         {{- $logos := partial "sector_logos.html" .icons }}
         {{- if $url }}
-        <a class="sector-card" href="{{ $url }}" title="{{ .name }}">
+        <a class="sector-card" href="{{ $url }}" title="{{ .name }}" data-goatcounter-click="sector-{{ .name | urlize }}">
             <span class="sector-logos">{{ $logos }}</span>
             <span class="sector-name">{{ .name }}</span>
         </a>

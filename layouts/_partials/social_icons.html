@@ -1,0 +1,9 @@
+{{- /* Overrides PaperMod's social_icons: adds a GoatCounter click event per icon. */ -}}
+<div class="social-icons" {{ with .align}}align="{{.}}" {{- end }}>
+    {{- range site.Params.socialIcons }}
+    <a href="{{ trim .url " " | safeURL }}" target="_blank" rel="noopener noreferrer me"
+        title="{{ (.title | default .name) | title }}" data-goatcounter-click="social-{{ .name | urlize }}">
+        {{ partial "svg.html" . }}
+    </a>
+    {{- end }}
+</div>

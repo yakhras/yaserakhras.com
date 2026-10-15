@@ -18,6 +18,8 @@ enableRobotsTXT = true
 
 [params]
   defaultTheme = "auto"
+  # GoatCounter site code: stats at https://yaserakhras.goatcounter.com (layouts/_partials/extend_head.html)
+  goatcounter = "yaserakhras"
   ShowReadingTime = false
   ShowBreadCrumbs = true
   ShowPostNavLinks = true

@@ -2,10 +2,12 @@
 import base64
 import hashlib
 import re
+import shutil
 
 import pytest
 
-from conftest import CONTENT, page_file, parse_html, read_page, sectors
+from conftest import (CONTENT, HUGO, hugo_build, page_file, parse_html, read_page,
+                      sectors)
 
 SITE = "https://yaserakhras.com"
 
@@ -185,6 +187,42 @@ def test_all_internal_links_and_assets_resolve(built_site):
                 if path and page_file(built_site, path) is None:
                     broken.append(f"{html.relative_to(built_site)}: {attr}={path}")
     assert broken == []
+
+
+# ---------------------------------------------------------------- analytics
+
+GOATCOUNTER = "https://yaserakhras.goatcounter.com/count"
+
+
+def goatcounter_scripts(doc):
+    return [s for s in doc.find_all("script") if "data-goatcounter" in s.attrs]
+
+
+def test_every_page_loads_goatcounter_once(built_site):
+    for html in built_site.rglob("*.html"):
+        doc = parse_html(html)
+        if any(m.attrs.get("http-equiv") == "refresh" for m in doc.find_all("meta")):
+            continue  # alias redirect stubs (e.g. /erp/page/1/)
+        scripts = goatcounter_scripts(doc)
+        assert len(scripts) == 1, html.relative_to(built_site)
+        assert scripts[0].attrs["data-goatcounter"] == GOATCOUNTER
+        assert scripts[0].attrs["src"] == "https://gc.zgo.at/count.js"
+
+
+def test_dev_build_has_no_goatcounter(tmp_path):
+    if shutil.which(HUGO) is None:
+        pytest.skip("hugo not found on PATH")
+    result = hugo_build(tmp_path, environment="development")
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert goatcounter_scripts(home(tmp_path)) == []
+
+
+def test_home_clicks_are_tracked(built_site):
+    doc = home(built_site)
+    tracked = [c.attrs.get("data-goatcounter-click") for c in cards(doc) if c.tag == "a"]
+    assert tracked == ["sector-erp"]
+    icons = doc.find(cls="social-icons").find_all("a")
+    assert [a.attrs.get("data-goatcounter-click") for a in icons] == ["social-github", "social-email"]
 
 
 # ---------------------------------------------------------------- hidden sectors once published
