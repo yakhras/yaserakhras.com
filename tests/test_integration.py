@@ -198,8 +198,8 @@ def test_version_page_lists_exactly_its_modules(built_site, version):
 
 
 def test_bare_version_index_redirects_to_erp(built_site):
-    html = page_file(built_site, "/erp/odoo/").read_text(encoding="utf-8")
-    assert 'http-equiv="refresh"' in html and f"url={SITE}/erp/" in html
+    html = page_file(built_site, "/erp/odoo/").read_text(encoding="utf-8").replace('"', "")
+    assert "http-equiv=refresh" in html and f"url={SITE}/erp/" in html
 
 
 def test_erp_cards_show_version_badges(built_site):
