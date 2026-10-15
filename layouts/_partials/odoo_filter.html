@@ -1,0 +1,14 @@
+{{- /* Version filter chips for the ERP section and the /erp/odoo/<version>/ pages.
+       Input: dict "page" (current page) "current" (version title, "" for all). */ -}}
+{{- with site.Taxonomies.odoo }}
+{{- $erp := site.GetPage "/erp" }}
+<nav class="odoo-filter" aria-label="Filter by Odoo version">
+  <a class="odoo-chip{{ if not $.current }} active{{ end }}" href="{{ $erp.RelPermalink }}"
+     {{- if not $.current }} aria-current="page"{{ end }}>All ({{ len $erp.RegularPages }})</a>
+  {{- range sort .ByCount "Name" "desc" }}
+  {{- $active := eq .Page.Title $.current }}
+  <a class="odoo-chip{{ if $active }} active{{ end }}" href="{{ .Page.RelPermalink }}"
+     {{- if $active }} aria-current="page"{{ end }}>Odoo {{ .Page.Title }} ({{ .Count }})</a>
+  {{- end }}
+</nav>
+{{- end }}

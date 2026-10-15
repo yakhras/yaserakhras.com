@@ -143,6 +143,17 @@ def test_no_leftover_todo_or_draft_notes_in_published_pages():
         assert not re.search(r"\bTODO\b|<!--\s*DRAFT", body), f"{md} has a leftover note"
 
 
+@pytest.mark.parametrize("page", published_regular_pages(CONTENT / "erp"),
+                         ids=lambda p: p.parent.name)
+def test_erp_page_declares_its_odoo_versions(page):
+    front, body = read_page(page)
+    versions = front.get("odoo")
+    assert versions and all(re.fullmatch(r"\d+\.\d+", v) for v in versions), \
+        f"{page.parent.name}: needs odoo: [\"18.0\", ...] in front matter"
+    # the version line is generated from the front matter, never typed by hand
+    assert "**Odoo:** {{< odoo >}}" in body
+
+
 # ---------------------------------------------------------------- photo
 
 def jpeg_size(path):

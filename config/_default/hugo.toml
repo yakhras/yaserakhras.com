@@ -12,6 +12,15 @@ enableRobotsTXT = true
 
 [taxonomies]
   tag = "tags"
+  # Odoo versions a module supports (front matter `odoo: ["18.0"]`): badges on cards,
+  # filter chips on /erp/ and one page per version at /erp/odoo/<version>/.
+  odoo = "odoo"
+
+[permalinks]
+  [permalinks.taxonomy]
+    odoo = "/erp/odoo/"
+  [permalinks.term]
+    odoo = "/erp/odoo/:slug/"
 
 [markup.goldmark.renderer]
   unsafe = false
@@ -26,6 +35,8 @@ enableRobotsTXT = true
   # Home page shows only the photo and sector cards: no recent-items list.
   # (PaperMod lists the pages of these sections on the home page.)
   mainSections = []
+  # Tags that describe the stack, not the business area: not shown as the area on cards.
+  nonAreaTags = ["odoo", "api", "python"]
 
   [params.homeInfoParams]
     Title = "Yaser Akhras"

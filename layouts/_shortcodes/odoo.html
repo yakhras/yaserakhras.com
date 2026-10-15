@@ -1,0 +1,6 @@
+{{- /* The page's Odoo versions from its `odoo` front matter, linked to their version pages: {{< odoo >}} */ -}}
+{{- $links := slice }}
+{{- range sort (.Page.GetTerms "odoo") "Title" "desc" }}
+  {{- $links = $links | append (printf `<a href="%s">%s</a>` .RelPermalink .Title) }}
+{{- end }}
+{{- delimit $links ", " | safeHTML -}}

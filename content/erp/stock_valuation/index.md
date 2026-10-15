@@ -3,13 +3,14 @@ title: "Stock Valuation per Warehouse for Odoo"
 summary: "Values stock per warehouse in Odoo: each warehouse keeps its own average cost, with cost history, landed costs, revaluation and transfers between warehouses."
 date: 2026-10-13
 tags: ["odoo", "inventory", "accounting", "python"]
+odoo: ["18.0"]
 ---
 
 An Odoo module that values stock **per warehouse** instead of once per company. Standard Odoo
 keeps one average cost per product, so goods bought at different prices in different warehouses
 all end up at the same blended cost. With this module, each warehouse keeps its own cost.
 
-**Source:** [github.com/yakhras/Odoo-Stock-Valuation](https://github.com/yakhras/Odoo-Stock-Valuation) · **License:** AGPL-3 · **Odoo:** 18.0
+**Source:** [github.com/yakhras/Odoo-Stock-Valuation](https://github.com/yakhras/Odoo-Stock-Valuation) · **License:** AGPL-3 · **Odoo:** {{< odoo >}}
 
 ## Features
 

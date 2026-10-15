@@ -98,3 +98,43 @@ a.sector-card:hover .sector-logo svg {
     white-space: nowrap;
     border: 0;
 }
+
+/* ---------- Odoo version filter (ERP section, /erp/odoo/<version>/) and badges ---------- */
+.odoo-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--gap);
+}
+.odoo-chip {
+    padding: 4px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--secondary);
+}
+.odoo-chip:hover {
+    border-color: var(--secondary);
+    color: var(--primary);
+}
+.odoo-chip.active {
+    background: #714B67;
+    border-color: #714B67;
+    color: #fff;
+}
+.odoo-badges {
+    margin-inline-start: 10px;
+}
+.odoo-badge {
+    display: inline-block;
+    margin-inline-end: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: #714B67;
+    color: #fff;
+    font-size: 12px;
+    line-height: 18px;
+}
+.odoo-areas {
+    font-size: 13px;
+}

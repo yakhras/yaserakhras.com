@@ -3,6 +3,7 @@ title: "GoatCounter Website Stats for Odoo"
 summary: "Brings a website's GoatCounter statistics into Odoo: a dashboard, page views, click events, traffic sources and the path each visitor took through the site."
 date: 2026-10-15
 tags: ["odoo", "analytics", "api", "python"]
+odoo: ["19.0"]
 ---
 
 An Odoo module that pulls a website's [GoatCounter](https://www.goatcounter.com) statistics into
@@ -10,7 +11,7 @@ Odoo through the GoatCounter API. Visits, pages, clicks, traffic sources and eac
 through the site appear next to the rest of your work, so you don't have to open goatcounter.com.
 This site's own statistics are read this way.
 
-**Source:** [github.com/yakhras/Odoo-GoatCounter-Stats](https://github.com/yakhras/Odoo-GoatCounter-Stats) · **License:** AGPL-3 · **Odoo:** 19.0
+**Source:** [github.com/yakhras/Odoo-GoatCounter-Stats](https://github.com/yakhras/Odoo-GoatCounter-Stats) · **License:** AGPL-3 · **Odoo:** {{< odoo >}}
 
 ## Features
 

@@ -1,7 +1,7 @@
 ---
 title: "ERP"
 description: "ERP development: custom Odoo modules and API integrations, each in its own repository."
-aliases: ["/odoo/"]
+aliases: ["/odoo/", "/erp/odoo/"]
 menus:
   main:
     weight: 10

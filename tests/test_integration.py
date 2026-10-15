@@ -154,6 +154,72 @@ def test_hidden_sectors_not_published(built_site, hidden):
     assert hidden not in (built_site / "sitemap.xml").read_text(encoding="utf-8")
 
 
+# ---------------------------------------------------------------- odoo versions
+
+def odoo_versions():
+    """{version: [project URL paths]} from the ERP pages' front matter."""
+    found = {}
+    for path in project_pages():
+        if not path.startswith("/erp/"):
+            continue
+        front, _ = read_page(CONTENT / path.strip("/") / "index.md")
+        for version in front.get("odoo", []):
+            found.setdefault(version, []).append(path)
+    return found
+
+
+def chips(doc):
+    nav = doc.find("nav", cls="odoo-filter")
+    return [(a.text(), a.attrs["href"], "active" in a.classes) for a in nav.find_all("a")]
+
+
+def entry_links(doc):
+    return sorted(local_path(a.attrs["href"]) for a in doc.find_all("a", cls="entry-link"))
+
+
+def test_erp_shows_version_chips(built_site):
+    versions = odoo_versions()
+    total = len([p for p in project_pages() if p.startswith("/erp/")])
+    expected = [(f"All ({total})", "/erp/", True)] + [
+        (f"Odoo {v} ({len(versions[v])})", f"/erp/odoo/{v}/", False)
+        for v in sorted(versions, key=lambda v: [int(x) for x in v.split(".")], reverse=True)]
+    assert chips(parse_html(page_file(built_site, "/erp/"))) == expected
+
+
+@pytest.mark.parametrize("version", sorted(odoo_versions()))
+def test_version_page_lists_exactly_its_modules(built_site, version):
+    doc = parse_html(page_file(built_site, f"/erp/odoo/{version}/"))
+    assert doc.find("h1").text().startswith(f"Odoo {version} modules")
+    assert entry_links(doc) == sorted(odoo_versions()[version])
+    active = [c for c in chips(doc) if c[2]]
+    assert [c[1] for c in active] == [f"/erp/odoo/{version}/"]
+    crumbs = [(a.text(), a.attrs["href"]) for a in doc.find("nav", cls="breadcrumbs").find_all("a")]
+    assert crumbs == [("Home", "/"), ("ERP", "/erp/")]
+
+
+def test_bare_version_index_redirects_to_erp(built_site):
+    html = page_file(built_site, "/erp/odoo/").read_text(encoding="utf-8")
+    assert 'http-equiv="refresh"' in html and f"url={SITE}/erp/" in html
+
+
+def test_erp_cards_show_version_badges(built_site):
+    doc = parse_html(page_file(built_site, "/erp/"))
+    for entry in doc.find_all("article", cls="post-entry"):
+        path = local_path(entry.find("a", cls="entry-link").attrs["href"])
+        front, _ = read_page(CONTENT / path.strip("/") / "index.md")
+        badges = [b.text() for b in entry.find_all("span", cls="odoo-badge")]
+        assert badges == [f"Odoo {v}" for v in sorted(front["odoo"], reverse=True)], path
+
+
+@pytest.mark.parametrize("path", [p for p in project_pages() if p.startswith("/erp/")])
+def test_project_page_version_line_links_version_pages(built_site, path):
+    content = parse_html(page_file(built_site, path)).find("div", cls="post-content")
+    links = [(a.text(), a.attrs.get("href")) for a in content.find_all("a")]
+    front, _ = read_page(CONTENT / path.strip("/") / "index.md")
+    for version in front["odoo"]:
+        assert (version, f"/erp/odoo/{version}/") in links
+
+
 # ---------------------------------------------------------------- whole site
 
 def test_cname_robots_and_sitemap(built_site):
