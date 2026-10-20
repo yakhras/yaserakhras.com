@@ -220,6 +220,16 @@ def test_project_page_version_line_links_version_pages(built_site, path):
         assert (version, f"/erp/odoo/{version}/") in links
 
 
+
+@pytest.mark.parametrize("path", [p for p in project_pages() if (CONTENT / p.strip("/") / "icon.png").exists()])
+def test_section_card_shows_module_icon(built_site, path):
+    section = path.rstrip("/").rsplit("/", 1)[0] + "/"
+    doc = parse_html(page_file(built_site, section))
+    card = next(a.parent for a in doc.find_all("a", cls="entry-link") if a.attrs.get("href") == f"{SITE}{path}")
+    icon = card.find("img", cls="entry-icon")
+    assert icon is not None and icon.attrs["src"].endswith(f"{path}icon.png")
+    assert page_file(built_site, f"{path}icon.png") is not None
+
 # ---------------------------------------------------------------- whole site
 
 def test_cname_robots_and_sitemap(built_site):

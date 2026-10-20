@@ -138,3 +138,16 @@ a.sector-card:hover .sector-logo svg {
 .odoo-areas {
     font-size: 13px;
 }
+
+/* Module icon before a card title (page bundle icon.png, the Odoo app icon) */
+.entry-hint-parent:has(> .entry-icon) {
+    justify-content: flex-start; /* PaperMod spreads the title row; keep icon and title together */
+    align-items: center;
+}
+.entry-icon {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    margin-inline-end: 10px;
+    border-radius: 6px;
+}

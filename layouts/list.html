@@ -1,4 +1,4 @@
-{{- /* Copy of PaperMod's list.html. Changes (marked "odoo"): version pages are titled
+{{- /* Copy of PaperMod's list.html. Changes (marked "odoo"): a page bundle's icon.png is shown before the card title, version pages are titled
        "Odoo <version> modules", and the ERP section + version pages show the version filter. */ -}}
 {{- define "main" }}
 {{- $odooTerm := and (eq .Kind "term") (eq .Data.Plural "odoo") }}
@@ -75,6 +75,9 @@
   {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
   <header class="entry-header">
     <h2 class="entry-hint-parent">
+      {{- with .Resources.GetMatch "icon.png" }}{{/* module icon: the same image as the Odoo app icon */}}
+      <img class="entry-icon" src="{{ .RelPermalink }}" width="32" height="32" alt="">
+      {{- end }}
       {{- .Title }}
       {{- if .Draft }}
       <span class="entry-hint" title="Draft">
