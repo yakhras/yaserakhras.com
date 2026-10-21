@@ -139,6 +139,8 @@ def test_project_page_links_repo_license_and_shows_screenshots(built_site, path)
     ("/odoo/", "/erp/"),
     ("/odoo/spt/", "/erp/spt/"),
     ("/projects/spt/", "/erp/spt/"),
+    ("/blog/", "/"),
+    ("/project/", "/"),
 ])
 def test_old_urls_redirect(built_site, old, new):
     doc = parse_html(page_file(built_site, old))
@@ -291,6 +293,13 @@ def test_dev_build_has_no_goatcounter(tmp_path):
     result = hugo_build(tmp_path, environment="development")
     assert result.returncode == 0, result.stdout + result.stderr
     assert goatcounter_scripts(home(tmp_path)) == []
+
+
+def test_old_url_redirect_is_counted(built_site):
+    doc = parse_html(page_file(built_site, "/blog/"))
+    scripts = goatcounter_scripts(doc)
+    assert len(scripts) == 1 and scripts[0].attrs["data-goatcounter"] == GOATCOUNTER
+    assert "redirect:" in scripts[0].attrs["onload"]
 
 
 def test_home_clicks_are_tracked(built_site):

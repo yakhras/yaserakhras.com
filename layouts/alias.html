@@ -1,0 +1,22 @@
+{{- /* Redirect stub for front-matter aliases (old URLs). Same as Hugo's built-in one, plus a GoatCounter
+       hit counted as "redirect:<old path>" so visits to old URLs stay visible in the stats.
+       JS redirects as soon as the hit is sent; the delayed meta refresh is the no-JS fallback. */ -}}
+<!DOCTYPE html>
+<html lang="{{ site.Language.LanguageCode }}">
+  <head>
+    <title>{{ .Permalink }}</title>
+    <link rel="canonical" href="{{ .Permalink }}">
+    <meta name="robots" content="noindex">
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="{{ if and hugo.IsProduction site.Params.goatcounter }}2{{ else }}0{{ end }}; url={{ .Permalink }}">
+    {{- if and hugo.IsProduction site.Params.goatcounter }}
+    <script>
+      window.goatcounter = {no_onload: true}
+      function go() { location.replace({{ .Permalink }}) }
+      setTimeout(go, 1500)
+    </script>
+    <script data-goatcounter="https://{{ site.Params.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"
+      onload="goatcounter.count({path: 'redirect:' + location.pathname}); go()" onerror="go()"></script>
+    {{- end }}
+  </head>
+</html>
