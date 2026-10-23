@@ -1,0 +1,78 @@
+/* Cards for the {{< regex >}} shortcode. Colours come from PaperMod's theme variables,
+   so light and dark mode both work. */
+.rx-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px 6px;
+    margin: 22px 0 26px;
+    background: var(--entry);
+}
+.rx-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.post-content .rx-card code.rx-pat {
+    font-size: 1.35em;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--primary);
+}
+.rx-means {
+    flex: 1;
+    min-width: 200px;
+    font-size: 1.05em;
+}
+.rx-means p { margin: 0; }
+.rx-badge {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid #8f7cf0;
+    color: #8f7cf0;
+    white-space: nowrap;
+}
+.post-content .rx-use {
+    margin: 12px 0 4px;
+    color: var(--secondary);
+}
+.rx-use span {
+    font-weight: 700;
+    color: var(--primary);
+}
+.rx-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+.rx-label {
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 92px;
+}
+.rx-label.rx-ok { color: #2f9e6b; }
+.rx-label.rx-no { color: #d1453b; }
+.post-content .rx-card code.rx-chip {
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: .9em;
+}
+.post-content .rx-card code.rx-chip.rx-ok {
+    background: rgba(76, 195, 138, .16);
+    border: 1px solid rgba(76, 195, 138, .55);
+}
+.post-content .rx-card code.rx-chip.rx-no {
+    background: rgba(229, 83, 75, .12);
+    border: 1px solid rgba(229, 83, 75, .5);
+    text-decoration: line-through;
+}
+.rx-body { margin-top: 14px; }
+.rx-body > :last-child { margin-bottom: 14px; }

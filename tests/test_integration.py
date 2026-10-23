@@ -37,8 +37,8 @@ def local_path(url):
 # ---------------------------------------------------------------- home
 
 def test_menu_shows_published_sectors_blog_and_about(built_site):
-    assert menu_items(home(built_site)) == \
-        [("ERP", f"{SITE}/erp/"), ("Blog", f"{SITE}/blog/"), ("About", f"{SITE}/about/")]
+    assert menu_items(home(built_site)) == [("ERP", f"{SITE}/erp/"), ("Linux", f"{SITE}/linux/"),
+                                            ("Blog", f"{SITE}/blog/"), ("About", f"{SITE}/about/")]
 
 
 def test_home_cards_order_and_state(built_site):
@@ -46,11 +46,11 @@ def test_home_cards_order_and_state(built_site):
               "sector-soon" in c.classes) for c in cards(home(built_site))]
     assert found == [
         ("ERP", "a", "/erp/", False),
-        ("Linux / Red Hat", "div", None, True),
+        ("Linux / Red Hat", "a", "/linux/", False),
         ("Networking", "div", None, True),
         ("Programming", "div", None, True),
     ]
-    for card in cards(home(built_site))[1:]:
+    for card in cards(home(built_site))[2:]:
         assert card.find(cls="sector-badge").text() == "coming soon"
 
 
@@ -124,7 +124,7 @@ def test_project_page_is_listed_in_its_section(built_site, path):
     assert f"{SITE}{path}" in links
 
 
-@pytest.mark.parametrize("path", project_pages())
+@pytest.mark.parametrize("path", [p for p in project_pages() if p.startswith("/erp/")])  # modules have repos
 def test_project_page_links_repo_license_and_shows_screenshots(built_site, path):
     doc = parse_html(page_file(built_site, path))
     content = doc.find("div", cls="post-content")
@@ -152,11 +152,13 @@ def test_old_urls_redirect(built_site, old, new):
     assert page_file(built_site, new) is not None
 
 
-@pytest.mark.parametrize("hidden", ["/linux/", "/networking/", "/programming/",
+@pytest.mark.parametrize("hidden", ["/networking/", "/programming/",
                                     "/programming/python/", "/programming/c-cpp/"])
 def test_hidden_sectors_not_published(built_site, hidden):
     assert page_file(built_site, hidden) is None
-    assert hidden not in (built_site / "sitemap.xml").read_text(encoding="utf-8")
+    # sitemap.xml is an index; the URLs are in the per-language sitemaps.
+    sitemaps = "".join(p.read_text(encoding="utf-8") for p in built_site.rglob("sitemap.xml"))
+    assert f"{SITE}{hidden}" not in sitemaps
 
 
 # ---------------------------------------------------------------- odoo versions
@@ -312,7 +314,7 @@ def test_old_url_redirect_is_counted(built_site):
 def test_home_clicks_are_tracked(built_site):
     doc = home(built_site)
     tracked = [c.attrs.get("data-goatcounter-click") for c in cards(doc) if c.tag == "a"]
-    assert tracked == ["sector-erp"]
+    assert tracked == ["sector-erp", "sector-linux"]
     icons = doc.find(cls="social-icons").find_all("a")
     assert [a.attrs.get("data-goatcounter-click") for a in icons] == ["social-github", "social-email"]
 

@@ -1,0 +1,21 @@
+{{- /* Copy button on ```console blocks copies only the commands (lines starting with "$ "),
+       without the prompt or the output. Other code blocks keep PaperMod's default copy. */ -}}
+{{- if (and (eq .Kind "page") (.Param "ShowCodeCopyButtons")) }}
+<script>
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button.copy-code');
+    if (!btn) return;
+    const code = btn.parentNode.querySelector('code.language-console');
+    if (!code) return;
+    const cmds = code.textContent.split('\n')
+        .filter((l) => l.startsWith('$ '))
+        .map((l) => l.slice(2))
+        .join('\n');
+    if (!cmds || !('clipboard' in navigator)) return;
+    e.stopImmediatePropagation();
+    navigator.clipboard.writeText(cmds);
+    btn.innerHTML = '{{- i18n "code_copied" | default "copied!" }}';
+    setTimeout(() => { btn.innerHTML = '{{- i18n "code_copy" | default "copy" }}'; }, 2000);
+}, true);
+</script>
+{{- end }}

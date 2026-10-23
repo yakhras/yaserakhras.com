@@ -1,0 +1,27 @@
+{{- /* One regex symbol as a card: pattern, meaning, when to use it, what it matches / doesn't, then the example.
+       Usage:
+       {{< regex pattern="r.d" means="any **one** character" use="you know the length…" yes="red|rad" no="rd|reed" ere="true" >}}
+       ```console
+       $ grep 'r.d' rd
+       ```
+       {{< /regex >}}
+       yes / no are "|"-separated. ere="true" adds a "needs grep -E" badge. */ -}}
+<div class="rx-card">
+  <div class="rx-head">
+    <code class="rx-pat">{{ .Get "pattern" }}</code>
+    <div class="rx-means">{{ .Get "means" | markdownify }}</div>
+    {{- with .Get "ere" }}<span class="rx-badge">needs grep -E</span>{{ end }}
+  </div>
+  {{- with .Get "use" }}
+  <p class="rx-use"><span>Use it when</span> {{ . | markdownify }}</p>
+  {{- end }}
+  {{- with .Get "yes" }}
+  <div class="rx-row"><span class="rx-label rx-ok">✓ matches</span>{{ range split . "|" }}<code class="rx-chip rx-ok">{{ . }}</code>{{ end }}</div>
+  {{- end }}
+  {{- with .Get "no" }}
+  <div class="rx-row"><span class="rx-label rx-no">✗ no match</span>{{ range split . "|" }}<code class="rx-chip rx-no">{{ . }}</code>{{ end }}</div>
+  {{- end }}
+  {{- with .Inner }}
+  <div class="rx-body">{{ $.Page.RenderString (dict "display" "block") . }}</div>
+  {{- end }}
+</div>

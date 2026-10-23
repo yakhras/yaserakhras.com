@@ -15,7 +15,7 @@
         {{- if not $url }}{{ with (index hugo.Sites 0).GetPage .path }}{{ $url = .RelPermalink }}{{ end }}{{ end }}
         {{- $logos := partial "sector_logos.html" .icons }}
         {{- if $url }}
-        <a class="sector-card" href="{{ $url }}" title="{{ .name }}" data-goatcounter-click="sector-{{ .name | urlize }}">
+        <a class="sector-card" href="{{ $url }}" title="{{ .name }}" data-goatcounter-click="sector-{{ path.Base .path }}">
             <span class="sector-logos">{{ $logos }}</span>
             <span class="sector-name">{{ .name }}</span>
         </a>
