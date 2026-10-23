@@ -1,3 +1,58 @@
+{{- /* Arabic font on Arabic-language pages (/ar/) and on bilingual pages;
+       side-by-side pages also get a wider column so two languages fit. */ -}}
+{{- if eq .Lang "ar" }}
+<style>body { font-family: "Almarai", sans-serif; }</style>
+{{- end }}
+{{- if or (eq .Lang "ar") (and .IsPage (or (.HasShortcode "bi") (.HasShortcode "sw"))) }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap">
+{{- if .HasShortcode "bi" }}
+<style>:root { --main-width: 1100px; }</style>
+{{- end }}
+{{- end }}
+{{- /* Language button on {{< sw >}} pages: English by default, one press shows Arabic.
+       The reader's choice is remembered in this browser. Front matter title_ar swaps the title too.
+       It lives here, not in extend_footer.html, because PaperMod caches the footer per page kind. */ -}}
+{{- if and .IsPage (.HasShortcode "sw") }}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const content = document.querySelector('.post-content');
+    if (!content) return;
+    const title = document.querySelector('.post-title');
+    const titleText = title && [...title.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim());
+    const titleEn = titleText ? titleText.nodeValue : '';
+    const titleAr = {{ .Params.title_ar | default "" }};
+
+    const bar = document.createElement('div');
+    bar.className = 'lang-switch-bar';
+    const btn = document.createElement('button');
+    btn.className = 'lang-switch';
+    bar.appendChild(btn);
+    content.prepend(bar);
+
+    const show = (lang) => {
+        const ar = lang === 'ar';
+        content.classList.toggle('lang-ar', ar);
+        btn.textContent = ar ? 'English' : 'عربي';
+        btn.lang = ar ? 'en' : 'ar';
+        btn.title = ar ? 'Read in English' : 'اقرأ بالعربية';
+        if (titleText && titleAr) titleText.nodeValue = ar ? titleAr : titleEn;
+        if (title) title.dir = ar ? 'rtl' : 'ltr';
+    };
+
+    let saved = 'en';
+    try { saved = localStorage.getItem('lang-switch') || 'en'; } catch (e) {}
+    show(saved);
+
+    btn.addEventListener('click', () => {
+        const next = content.classList.contains('lang-ar') ? 'en' : 'ar';
+        show(next);
+        try { localStorage.setItem('lang-switch', next); } catch (e) {}
+    });
+});
+</script>
+{{- end }}
 {{- /* GoatCounter analytics: page views plus clicks on elements with data-goatcounter-click.
        Production builds only, so local `hugo server` visits are not counted. */ -}}
 {{- if and hugo.IsProduction site.Params.goatcounter }}

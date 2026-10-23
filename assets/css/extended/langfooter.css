@@ -1,0 +1,65 @@
+/* Footer as on apple.com: copyright at the start, languages at the end (layouts/_partials/footer.html).
+   Flexbox follows the page direction, so Arabic pages mirror it. The suggestion bar is in lang_suggest.html. */
+.site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px 16px;
+    text-align: start;
+}
+
+.lang-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.lang-sep {
+    color: var(--border);
+}
+
+@media (max-width: 480px) {
+    .site-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.lang-footer a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.lang-current {
+    color: var(--primary);
+}
+
+.lang-suggest {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--entry);
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--primary);
+}
+
+.lang-suggest[hidden] {
+    display: none;
+}
+
+.lang-suggest a {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.lang-suggest-close {
+    font-size: 18px;
+    line-height: 1;
+    color: var(--secondary);
+    cursor: pointer;
+}

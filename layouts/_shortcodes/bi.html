@@ -1,0 +1,13 @@
+{{- /* Bilingual row: English on the left, Arabic on the right.
+       Usage: {{< bi >}} English markdown <!--ar--> Arabic markdown {{< /bi >}}
+       One row per section keeps both languages' headings level with each other. */ -}}
+{{- $parts := split .Inner "<!--ar-->" -}}
+{{- if ne (len $parts) 2 }}{{ errorf "bi shortcode in %s needs exactly one <!--ar--> separator" .Page.File.Path }}{{ end -}}
+<div class="bi-row">
+<div class="bi-en" lang="en" dir="ltr">
+{{ .Page.RenderString (dict "display" "block") (index $parts 0 | strings.TrimSpace) }}
+</div>
+<div class="bi-ar" lang="ar" dir="rtl">
+{{ .Page.RenderString (dict "display" "block") (index $parts 1 | strings.TrimSpace) }}
+</div>
+</div>

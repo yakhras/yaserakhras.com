@@ -1,8 +1,25 @@
 baseURL = "https://yaserakhras.com/"
-locale = "en-us"
 title = "Yaser Akhras"
 theme = "PaperMod"
 enableRobotsTXT = true
+
+# Languages: English at the site root, Arabic under /ar/. A page is translated by putting
+# index.ar.md (or _index.ar.md) next to its English file. The language choice is in the
+# footer (layouts/_partials/extend_footer.html), not in the header.
+defaultContentLanguage = "en"
+[languages]
+  [languages.en]
+    weight = 1
+    locale = "en-us"
+    languageName = "English"
+  [languages.ar]
+    weight = 2
+    locale = "ar"
+    direction = "rtl"
+    languageName = "العربية"
+    title = "ياسر الأخرس"
+    [languages.ar.params.homeInfoParams]
+      Title = "ياسر الأخرس"
 
 # Site map: one top-level folder per sector (content/erp, linux, networking, programming).
 # Menu entries are set in each sector's _index.md, so a sector kept as draft stays out of the menu.
@@ -32,6 +49,8 @@ enableRobotsTXT = true
   ShowReadingTime = false
   ShowBreadCrumbs = true
   ShowPostNavLinks = true
+  # The language choice lives in the footer, so PaperMod's header toggle is off.
+  disableLangToggle = true
   # Home page shows only the photo and sector cards: no recent-items list.
   # (PaperMod lists the pages of these sections on the home page.)
   mainSections = []

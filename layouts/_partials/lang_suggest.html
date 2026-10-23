@@ -1,0 +1,39 @@
+{{- /* Suggestion bar at the top, like apple.com's "choose another country or region" bar: shown when the
+       browser's first language is the language of this page's translation, until the reader dismisses it
+       or picks a language. It never redirects. Called from footer.html; it also remembers the language the
+       reader picks in the footer. */ -}}
+{{- if hugo.IsMultilingual }}
+{{- with .Translations }}{{ with index . 0 }}
+<div class="lang-suggest" hidden lang="{{ .Lang }}" dir="{{ .Language.Direction | default "ltr" }}" data-lang="{{ .Lang }}">
+    <span>{{ if eq .Lang "ar" }}هذه الصفحة متوفرة باللغة العربية.{{ else }}This page is also available in English.{{ end }}</span>
+    <a href="{{ .RelPermalink }}" data-lang-choice="{{ .Lang }}">{{ if eq .Lang "ar" }}عرض بالعربية{{ else }}View in English{{ end }}</a>
+    <button type="button" class="lang-suggest-close" aria-label="{{ if eq .Lang "ar" }}إغلاق{{ else }}Close{{ end }}">×</button>
+</div>
+{{- end }}{{ end }}
+<script>
+(() => {
+    const store = {
+        get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+        set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
+    };
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest('[data-lang-choice]');
+        if (a) store.set('lang-choice', a.dataset.langChoice);
+    });
+
+    const bar = document.querySelector('.lang-suggest');
+    if (!bar) return;
+    const first = ((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
+    // ?lang-suggest forces the bar, for checking it in a browser whose language doesn't trigger it.
+    const forced = new URLSearchParams(location.search).has('lang-suggest');
+    const wanted = first.startsWith(bar.dataset.lang) && !store.get('lang-choice') && !store.get('lang-suggest-closed');
+    if (!forced && !wanted) return;
+    document.body.prepend(bar);
+    bar.hidden = false;
+    bar.querySelector('.lang-suggest-close').addEventListener('click', () => {
+        bar.hidden = true;
+        store.set('lang-suggest-closed', '1');
+    });
+})();
+</script>
+{{- end }}

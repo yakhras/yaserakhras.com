@@ -1,0 +1,40 @@
+/* Switchable pages ({{< sw >}} shortcode): one language at a time, English by default. */
+.post-content .sw-ar,
+.post-content.lang-ar .sw-en {
+    display: none;
+}
+
+.post-content.lang-ar .sw-ar {
+    display: block;
+}
+
+.sw-ar {
+    font-family: "Almarai", sans-serif;
+    line-height: 1.9;
+}
+
+/* The button looks like PaperMod's code copy button, but stays visible. */
+.lang-switch-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.lang-switch {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 8px;
+    font-size: 14px;
+    line-height: 1.8;
+    cursor: pointer;
+    user-select: none;
+}
+
+.lang-switch:hover {
+    color: #fff;
+}
+
+.lang-switch[lang="ar"] {
+    font-family: "Almarai", sans-serif;
+}

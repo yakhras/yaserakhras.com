@@ -10,6 +10,7 @@ import shutil
 import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import unquote
 
 import pytest
 import tomli
@@ -96,7 +97,8 @@ def built_site_drafts(tmp_path_factory):
 
 def page_file(public, url_path):
     """Map a site URL path ('/erp/spt/') to its file in the build output, or None."""
-    rel = url_path.split("#")[0].split("?")[0].lstrip("/")
+    # Hugo percent-encodes non-ASCII paths in links (Arabic tags) but writes the files decoded.
+    rel = unquote(url_path.split("#")[0].split("?")[0]).lstrip("/")
     candidate = public / rel
     if candidate.is_file():
         return candidate

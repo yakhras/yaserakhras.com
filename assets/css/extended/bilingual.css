@@ -1,0 +1,41 @@
+/* Bilingual pages ({{< bi >}} shortcode): English left, Arabic right, stacked on phones. */
+.bi-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+}
+
+.bi-row > div {
+    min-width: 0;
+}
+
+.bi-ar {
+    font-family: "Almarai", sans-serif;
+    line-height: 1.9;
+    border-inline-start: 1px solid var(--border);
+    padding-inline-start: 2.5rem;
+    margin-inline-start: -1.25rem;
+}
+
+/* Tables are wide; let them scroll inside their half instead of overflowing it. */
+.bi-row table {
+    display: block;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .bi-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .bi-ar {
+        border-inline-start: none;
+        padding-inline-start: 0;
+        margin-inline-start: 0;
+        border-top: 1px solid var(--border);
+        padding-top: 1rem;
+    }
+}

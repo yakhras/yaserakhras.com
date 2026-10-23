@@ -11,6 +11,8 @@
         {{- /* A draft section still resolves, but has no permalink: treat it as coming soon. */}}
         {{- $url := "" }}
         {{- with site.GetPage .path }}{{ $url = .RelPermalink }}{{ end }}
+        {{- /* Arabic home: a sector with no Arabic version links to its English section. */}}
+        {{- if not $url }}{{ with (index hugo.Sites 0).GetPage .path }}{{ $url = .RelPermalink }}{{ end }}{{ end }}
         {{- $logos := partial "sector_logos.html" .icons }}
         {{- if $url }}
         <a class="sector-card" href="{{ $url }}" title="{{ .name }}" data-goatcounter-click="sector-{{ .name | urlize }}">

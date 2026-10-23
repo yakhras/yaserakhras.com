@@ -36,8 +36,9 @@ def local_path(url):
 
 # ---------------------------------------------------------------- home
 
-def test_menu_shows_published_sectors_and_about(built_site):
-    assert menu_items(home(built_site)) == [("ERP", f"{SITE}/erp/"), ("About", f"{SITE}/about/")]
+def test_menu_shows_published_sectors_blog_and_about(built_site):
+    assert menu_items(home(built_site)) == \
+        [("ERP", f"{SITE}/erp/"), ("Blog", f"{SITE}/blog/"), ("About", f"{SITE}/about/")]
 
 
 def test_home_cards_order_and_state(built_site):
@@ -100,10 +101,13 @@ def test_about_page(built_site):
 
 def project_pages():
     """URL paths of every published project page bundle (content/<sector>/.../<page>/index.md)."""
+    sector_dirs = {s["path"].strip("/") for s in sectors()}
     pages = []
     for md in sorted(CONTENT.rglob("index.md")):
         if md.parent.parent == CONTENT or read_page(md)[0].get("draft", False):
             continue  # top-level pages (about) and drafts
+        if md.relative_to(CONTENT).parts[0] not in sector_dirs:
+            continue  # blog posts are not projects
         pages.append("/" + md.parent.relative_to(CONTENT).as_posix() + "/")
     return pages
 
@@ -139,7 +143,6 @@ def test_project_page_links_repo_license_and_shows_screenshots(built_site, path)
     ("/odoo/", "/erp/"),
     ("/odoo/spt/", "/erp/spt/"),
     ("/projects/spt/", "/erp/spt/"),
-    ("/blog/", "/"),
     ("/project/", "/"),
 ])
 def test_old_urls_redirect(built_site, old, new):
@@ -237,8 +240,12 @@ def test_section_card_shows_module_icon(built_site, path):
 def test_cname_robots_and_sitemap(built_site):
     assert (built_site / "CNAME").read_text(encoding="utf-8").strip() == "yaserakhras.com"
     assert (built_site / "robots.txt").is_file()
-    sitemap = (built_site / "sitemap.xml").read_text(encoding="utf-8")
-    for url in ("/erp/", "/erp/spt/", "/about/"):
+    # Multilingual: sitemap.xml is an index of one sitemap per language.
+    index = (built_site / "sitemap.xml").read_text(encoding="utf-8")
+    parts = re.findall(r"<loc>([^<]+)</loc>", index)
+    assert parts == [f"{SITE}/en/sitemap.xml", f"{SITE}/ar/sitemap.xml"]
+    sitemap = "".join(page_file(built_site, local_path(p)).read_text(encoding="utf-8") for p in parts)
+    for url in ("/erp/", "/erp/spt/", "/about/", "/blog/ci_cd/", "/ar/blog/ci_cd/"):
         assert f"{SITE}{url}" in sitemap
 
 
@@ -296,7 +303,7 @@ def test_dev_build_has_no_goatcounter(tmp_path):
 
 
 def test_old_url_redirect_is_counted(built_site):
-    doc = parse_html(page_file(built_site, "/blog/"))
+    doc = parse_html(page_file(built_site, "/project/"))
     scripts = goatcounter_scripts(doc)
     assert len(scripts) == 1 and scripts[0].attrs["data-goatcounter"] == GOATCOUNTER
     assert "redirect:" in scripts[0].attrs["onload"]
@@ -315,7 +322,56 @@ def test_home_clicks_are_tracked(built_site):
 def test_draft_build_publishes_all_sectors_in_order(built_site_drafts):
     doc = home(built_site_drafts)
     assert [name for name, _ in menu_items(doc)] == \
-        ["ERP", "Linux", "Networking", "Programming", "About"]
+        ["ERP", "Linux", "Networking", "Programming", "Blog", "About"]
     assert [c.attrs.get("href") for c in cards(doc)] == \
         ["/erp/", "/linux/", "/networking/", "/programming/"]
     assert all(c.tag == "a" and "sector-soon" not in c.classes for c in cards(doc))
+
+
+# ---------------------------------------------------------------- languages and footer
+
+def footer(doc):
+    return doc.find("footer", cls="site-footer")  # posts also have a <footer> for their tags
+
+
+def footer_languages(doc):
+    """(name, href or None for the current language) of each language link in the footer."""
+    nav = footer(doc).find("nav", cls="lang-footer")
+    return [(n.text().strip(), n.attrs.get("href")) for n in nav.find_all()
+            if n.tag in ("a", "span") and "lang-sep" not in n.classes]
+
+
+def test_footer_has_copyright_and_no_powered_by(built_site):
+    doc = home(built_site)
+    assert footer(doc).find(cls="footer-copyright").text().strip().startswith("Copyright ©")
+    assert "Powered by" not in footer(doc).text()
+
+
+def test_footer_links_the_same_page_in_the_other_language(built_site):
+    en = parse_html(page_file(built_site, "/blog/ci_cd/"))
+    ar = parse_html(page_file(built_site, "/ar/blog/ci_cd/"))
+    assert footer_languages(en) == [("English", None), ("العربية", "/ar/blog/ci_cd/")]
+    assert footer_languages(ar) == [("English", "/blog/ci_cd/"), ("العربية", None)]
+
+
+def test_untranslated_page_links_the_other_language_home(built_site):
+    doc = parse_html(page_file(built_site, "/erp/spt/"))
+    assert footer_languages(doc) == [("English", None), ("العربية", "/ar/")]
+
+
+def test_arabic_pages_are_right_to_left(built_site):
+    html = parse_html(page_file(built_site, "/ar/blog/ci_cd/")).find("html")
+    assert html.attrs.get("lang") == "ar" and html.attrs.get("dir") == "rtl"
+    assert parse_html(page_file(built_site, "/blog/ci_cd/")).find("html").attrs.get("dir") != "rtl"
+
+
+def test_arabic_home_cards_match_english_home(built_site):
+    """Sectors with no Arabic version link to their English section, not "coming soon"."""
+    en = [(c.tag, c.attrs.get("href")) for c in cards(home(built_site))]
+    ar = [(c.tag, c.attrs.get("href")) for c in cards(parse_html(page_file(built_site, "/ar/")))]
+    assert ar == en and ("a", "/erp/") in ar
+
+
+def test_layout_experiments_stay_unpublished(built_site):
+    for path in ("/blog/ci_cd_side_by_side/", "/blog/ci_cd_switch/"):
+        assert page_file(built_site, path) is None
