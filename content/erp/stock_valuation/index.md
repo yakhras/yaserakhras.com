@@ -4,6 +4,41 @@ summary: "Values stock per warehouse in Odoo: each warehouse keeps its own avera
 date: 2026-10-13
 tags: ["odoo", "inventory", "accounting", "python"]
 odoo: ["18.0"]
+module: stock_valuation
+repo: yakhras/Odoo-Stock-Valuation
+releases:
+  "18.0": "18.0.1.0.2"
+notes:
+  "18.0": "Odoo 18.0 only: Odoo 19.0 removed the stock valuation layers this module is built on, so a 19.0/20.0 version would be a redesign, not a port."
+screens:
+  - name: location_costs
+    caption: "*Location Costs* (Inventory → Reporting): every product and warehouse cost in one list."
+    notes:
+      - "The warehouse the cost belongs to."
+      - "Its current average cost (AVCO)."
+  - name: stock_value
+    caption: "Stock per location: the same product is worth 0.44 in one warehouse and 0.72 in the other."
+    notes:
+      - "The unit value, from the cost of the location's warehouse."
+      - "The value of the stock in that location."
+  - name: product_costs
+    caption: "The product form's *Costs* tab: this product's cost in each warehouse."
+    notes:
+      - "The tab added by the module."
+      - "One line per warehouse with its own cost."
+  - name: revaluation
+    caption: "The revaluation wizard works on one warehouse at a time."
+    notes:
+      - "The warehouse to revalue."
+      - "The current value of the stock in that warehouse only."
+  - name: valuation_layer
+    caption: "A valuation layer carries its warehouse, so deliveries are valued at their own warehouse's cost."
+    notes:
+      - "The warehouse of this layer: here a receipt into the North warehouse."
+  - name: exo_transfer
+    caption: "A transfer between warehouses: validating the EXO (out) creates the EXI (in) for the destination warehouse."
+    notes:
+      - "Where the goods go. The value moves with them."
 ---
 
 An Odoo module that values stock **per warehouse** instead of once per company. Standard Odoo
@@ -21,37 +56,17 @@ all end up at the same blended cost. With this module, each warehouse keeps its 
 - Landed costs raise only the receiving warehouse's cost, prorated to the stock that remains
 - The revaluation wizard works on one warehouse at a time
 - Transfers between warehouses (EXO → EXI) move the value along with the goods
-- Covered by 16 automated tests
+- Covered by 16 automated tests, run by GitHub Actions on every push and before every release
 
-## Screenshots
+## Download and screenshots
 
-Every product and warehouse cost in one list:
+The screenshots use generated demo data; the numbers on them match the notes below each one.
 
-![Location costs](location_costs.png)
-
-The same product is worth 0.44 in one warehouse and 0.72 in the other:
-
-![Stock value per warehouse](stock_value.png)
-
-Each product's costs, on its own tab in the product form:
-
-![Product costs tab](product_costs.png)
-
-Revaluation of one warehouse:
-
-![Revaluation per warehouse](revaluation.png)
-
-A transfer between warehouses: validating the EXO creates the EXI for the destination warehouse:
-
-![EXO transfer](exo_transfer.png)
+{{< versions >}}
 
 ## Installation
 
-```bash
-git clone -b 18.0 https://github.com/yakhras/Odoo-Stock-Valuation.git
-```
-
-Add the cloned folder to `addons_path`, restart Odoo, update the apps list and install
-**Stock Valuation per Warehouse**. Products need an AVCO costing method; FIFO isn't supported
-yet. Full documentation and known limitations are in the
+Download the zip above, or clone the `18.0` branch. Add the folder to `addons_path`, restart
+Odoo, update the apps list and install **Stock Valuation per Warehouse**. Products need an AVCO
+costing method; FIFO isn't supported yet. Full documentation and known limitations are in the
 [repository README](https://github.com/yakhras/Odoo-Stock-Valuation#readme).
