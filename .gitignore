@@ -6,3 +6,7 @@ resources/_gen/
 .pytest_cache/
 __pycache__/
 /command.md
+
+# Built by scripts/fetch_releases.py from the modules' GitHub releases
+content/**/*.zip
+data/releases.json

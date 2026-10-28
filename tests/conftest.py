@@ -8,6 +8,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote
@@ -63,7 +64,21 @@ def published_regular_pages(directory):
 
 # ---------------------------------------------------------------- build
 
+_releases_fetched = False
+
+
+def fetch_releases():
+    """Download the module zips once per test session, as the deploy does before Hugo."""
+    global _releases_fetched
+    if not _releases_fetched:
+        result = subprocess.run([sys.executable, str(ROOT / "scripts" / "fetch_releases.py")],
+                                capture_output=True, text=True, encoding="utf-8")
+        assert result.returncode == 0, result.stdout + result.stderr
+        _releases_fetched = True
+
+
 def hugo_build(destination, drafts=False, environment="production"):
+    fetch_releases()
     args = [HUGO, "--source", str(ROOT), "--destination", str(destination),
             "--environment", environment, "--minify", "--cleanDestinationDir"]
     if drafts:

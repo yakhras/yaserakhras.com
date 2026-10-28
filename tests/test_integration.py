@@ -377,3 +377,77 @@ def test_arabic_home_cards_match_english_home(built_site):
 def test_layout_experiments_stay_unpublished(built_site):
     for path in ("/blog/ci_cd_side_by_side/", "/blog/ci_cd_switch/"):
         assert page_file(built_site, path) is None
+
+
+# ---------------------------------------------------------------- version cards (downloads)
+
+def release_pages():
+    """URL paths of the ERP pages that offer downloads (`releases` in front matter)."""
+    return [p for p in project_pages()
+            if read_page(CONTENT / p.strip("/") / "index.md")[0].get("releases")]
+
+
+def version_cards(public, path):
+    return parse_html(page_file(public, path)).find_all("details", cls="odoo-version")
+
+
+def test_release_pages_found():
+    assert "/erp/goatcounter_stats/" in release_pages()
+
+
+@pytest.mark.parametrize("path", release_pages())
+def test_one_card_per_version_newest_open(built_site, path):
+    front, _ = read_page(CONTENT / path.strip("/") / "index.md")
+    newest_first = sorted(front["odoo"], key=lambda v: [int(x) for x in v.split(".")], reverse=True)
+    cards = version_cards(built_site, path)
+    assert [c.attrs["id"] for c in cards] == [f"odoo-{v}" for v in newest_first]
+    assert ["open" in c.attrs for c in cards] == [True] + [False] * (len(cards) - 1)
+    assert {c.attrs.get("name") for c in cards} == {"odoo-version"}  # one open at a time
+
+
+@pytest.mark.parametrize("path", release_pages())
+def test_card_download_is_the_released_module(built_site, path):
+    import json
+    import zipfile
+    front, _ = read_page(CONTENT / path.strip("/") / "index.md")
+    data = json.loads((CONTENT.parent / "data" / "releases.json").read_text(encoding="utf-8"))
+    data = data[path.strip("/").rsplit("/", 1)[-1]]
+    for card in version_cards(built_site, path):
+        series = card.attrs["id"].removeprefix("odoo-")
+        version = front["releases"][series]
+        hrefs = {a.attrs["href"] for a in card.find_all("a") if "download" in a.attrs}
+        assert hrefs == {f"{path}{front['module']}-{version}.zip"}, card.attrs["id"]
+        zip_file = page_file(built_site, hrefs.pop())
+        assert zip_file is not None
+        assert hashlib.sha256(zip_file.read_bytes()).hexdigest() == data[series]["sha256"]
+        with zipfile.ZipFile(zip_file) as z:
+            assert {n.split("/")[0] for n in z.namelist()} == {front["module"]}
+            manifest = z.read(f"{front['module']}/__manifest__.py").decode()
+        assert f"'version': '{version}'" in manifest
+        assert card.find(cls="ov-meta").text().startswith(f"v{version} · released {data[series]['date']}")
+
+
+@pytest.mark.parametrize("path", release_pages())
+def test_card_shows_its_own_series_screenshots_with_notes(built_site, path):
+    front, _ = read_page(CONTENT / path.strip("/") / "index.md")
+    for card in version_cards(built_site, path):
+        series = card.attrs["id"].removeprefix("odoo-")
+        screens = [s for s in front["screens"] if not s.get("only") or series in s["only"]]
+        figures = card.find_all("figure", cls="ov-shot")
+        assert [f.find("img").attrs["src"] for f in figures] == \
+            [f"{path}{series}/{s['name']}.png" for s in screens]
+        for fig, screen in zip(figures, screens):
+            assert page_file(built_site, fig.find("img").attrs["src"]) is not None
+            assert len(fig.find_all("li")) == len(screen.get("notes", []))
+
+
+@pytest.mark.parametrize("path", release_pages())
+def test_screenshot_folders_match_screens(path):
+    """Every series folder holds exactly the PNGs its `screens` list names: none missing, none stray."""
+    bundle = CONTENT / path.strip("/")
+    front, _ = read_page(bundle / "index.md")
+    assert sorted(front["releases"]) == sorted(front["odoo"])
+    for series in front["odoo"]:
+        expected = {f"{s['name']}.png" for s in front["screens"] if not s.get("only") or series in s["only"]}
+        assert {p.name for p in (bundle / series).glob("*.png")} == expected, series
+        assert all(s.get("caption") for s in front["screens"])

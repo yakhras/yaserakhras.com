@@ -1,0 +1,151 @@
+/* {{< versions >}}: one card per Odoo series on a module page (layouts/_shortcodes/versions.html). */
+.odoo-versions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0 24px;
+}
+
+.odoo-version {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--entry);
+}
+
+.odoo-version[open] {
+    border-color: var(--secondary);
+}
+
+.post-content .odoo-version summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.odoo-version summary::-webkit-details-marker {
+    display: none;
+}
+
+/* The open/closed arrow, at the far end of the summary row. */
+.odoo-version summary::after {
+    content: "▸";
+    order: 3;
+    color: var(--secondary);
+    transition: transform 0.15s;
+}
+
+.odoo-version[open] summary::after {
+    transform: rotate(90deg);
+}
+
+.odoo-version summary .odoo-badge {
+    margin: 0;
+    font-size: 14px;
+    line-height: 22px;
+    padding: 1px 10px;
+}
+
+.ov-meta {
+    flex: 1 1 auto;
+    color: var(--secondary);
+    font-size: 14px;
+}
+
+.post-content a.ov-download {
+    order: 2;
+    padding: 4px 12px;
+    border-radius: var(--radius);
+    background: #714B67;
+    color: #fff;
+    font-size: 14px;
+    box-shadow: none;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.post-content a.ov-download:hover {
+    opacity: 0.9;
+}
+
+.ov-body {
+    padding: 4px 16px 16px;
+    border-top: 1px solid var(--border);
+}
+
+.post-content .ov-facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 16px;
+    margin: 12px 0 16px;
+    font-size: 15px;
+}
+
+.post-content .ov-facts dt,
+.post-content .ov-facts dd {
+    width: auto;             /* PaperMod: dt 25%, dd 75% of a flex dl */
+    margin: 0;
+    padding: 0;
+}
+
+.post-content .ov-facts dt {
+    font-weight: 600;
+}
+
+.post-content .ov-facts dd {
+    overflow-wrap: anywhere;
+}
+
+.ov-sha {
+    cursor: help;
+}
+
+.post-content .ov-shot {
+    margin: 20px 0 0;
+}
+
+.post-content .ov-shot img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.post-content .ov-shot figcaption {
+    margin-top: 8px;
+    text-align: start;
+    font-size: 15px;
+    font-weight: normal;     /* PaperMod makes figcaption bold */
+    color: var(--primary);
+}
+
+.post-content .ov-shot figcaption p {
+    margin: 0 0 4px;
+    color: var(--primary);
+    font-size: 15px;
+}
+
+/* Numbered like the red badges on the screenshot. */
+.post-content .ov-marks {
+    margin: 0;
+    padding-inline-start: 22px;
+    color: var(--secondary);
+}
+
+.post-content .ov-marks li::marker {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .post-content .ov-facts {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+    .post-content .ov-facts dd {
+        margin-bottom: 8px;
+    }
+}

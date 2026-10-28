@@ -1,0 +1,74 @@
+{{- /* One card per Odoo series of a module page: {{< versions >}}
+       Front matter: odoo, module, repo, releases {series: version}, and screens
+       [{name, caption, notes: [one line per numbered red mark], only: [series]}].
+       Download data (file, size, sha256, date, url) comes from data/releases.json, written by
+       scripts/fetch_releases.py. Screenshots: <bundle>/<series>/<name>.png.
+       Cards are <details> sharing one name (an accordion), newest series open;
+       #odoo-<series> in the URL opens that card. */ -}}
+{{- $page := .Page }}
+{{- $slug := path.Base (strings.TrimSuffix "/" $page.File.Dir) }}
+{{- $data := index hugo.Data.releases $slug }}
+{{- $module := $page.Params.module }}
+{{- $ordered := sort $page.Params.odoo "value" "desc" }}
+<section class="odoo-versions">
+{{- range $i, $s := $ordered }}
+  {{- $rel := index $data $s }}
+  {{- if not $rel }}{{ errorf "versions: no release data for %s %s: run scripts/fetch_releases.py" $slug $s }}{{ end }}
+  {{- $zip := $page.Resources.Get $rel.file }}
+  {{- if not $zip }}{{ errorf "versions: %s/%s missing: run scripts/fetch_releases.py" $slug $rel.file }}{{ end }}
+  <details class="odoo-version" name="odoo-version" id="odoo-{{ $s }}"{{ if eq $i 0 }} open{{ end }}>
+    <summary>
+      <span class="odoo-badge">Odoo {{ $s }}</span>
+      <span class="ov-meta">v{{ $rel.version }} · released {{ $rel.date }} · tested on Odoo {{ $s }}</span>
+      <a class="ov-download" href="{{ $zip.RelPermalink }}" download
+         data-goatcounter-click="download-{{ $module }}-{{ $s }}">Download .zip</a>
+    </summary>
+    <div class="ov-body">
+      <dl class="ov-facts">
+        <dt>Download</dt>
+        <dd><a href="{{ $zip.RelPermalink }}" download data-goatcounter-click="download-{{ $module }}-{{ $s }}">{{ $rel.file }}</a>
+          · {{ lang.FormatNumber 0 (div (float $rel.size) 1024) }} KB
+          · SHA-256 <code class="ov-sha" title="{{ $rel.sha256 }}">{{ substr $rel.sha256 0 12 }}…</code></dd>
+        <dt>Install</dt>
+        <dd>Unzip into a folder on your <code>addons_path</code>, restart Odoo, update the apps list
+          and install. Or: <code>git clone -b {{ $s }} https://github.com/{{ $page.Params.repo }}.git</code></dd>
+        <dt>Changes</dt>
+        <dd><a href="{{ $rel.url }}">Release notes for {{ $rel.version }}</a></dd>
+        {{- with index ($page.Params.notes | default dict) $s }}
+        <dt>Notes</dt>
+        <dd>{{ . | markdownify }}</dd>
+        {{- end }}
+      </dl>
+      {{- $n := 0 }}
+      {{- range $page.Params.screens }}
+        {{- if or (not .only) (in .only $s) }}
+          {{- $img := $page.Resources.Get (printf "%s/%s.png" $s .name) }}
+          {{- if not $img }}{{ errorf "versions: %s/%s/%s.png missing" $slug $s .name }}{{ end }}
+          {{- $n = add $n 1 }}
+      <figure class="ov-shot">
+        <a href="{{ $img.RelPermalink }}"><img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}"
+           height="{{ $img.Height }}" loading="lazy" alt="{{ .caption | plainify }}"></a>
+        <figcaption>
+          <p><strong>{{ $n }}.</strong> {{ .caption | markdownify }}</p>
+          {{- with .notes }}
+          <ol class="ov-marks">{{ range . }}<li>{{ . | markdownify }}</li>{{ end }}</ol>
+          {{- end }}
+        </figcaption>
+      </figure>
+        {{- end }}
+      {{- end }}
+    </div>
+  </details>
+{{- end }}
+</section>
+<script>
+(function () {
+  function openFromHash() {
+    var id = decodeURIComponent(location.hash.slice(1));
+    var card = id.indexOf("odoo-") === 0 && document.getElementById(id);
+    if (card && card.tagName === "DETAILS") { card.open = true; card.scrollIntoView(); }
+  }
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
+})();
+</script>
