@@ -1,4 +1,5 @@
 """Integration tests: build the site with Hugo (as the deploy does) and check the output."""
+import ast
 import base64
 import hashlib
 import re
@@ -423,7 +424,7 @@ def test_card_download_is_the_released_module(built_site, path):
         with zipfile.ZipFile(zip_file) as z:
             assert {n.split("/")[0] for n in z.namelist()} == {front["module"]}
             manifest = z.read(f"{front['module']}/__manifest__.py").decode()
-        assert f"'version': '{version}'" in manifest
+        assert ast.literal_eval(manifest)["version"] == version  # single or double quotes
         assert card.find(cls="ov-meta").text().startswith(f"v{version} · released {data[series]['date']}")
 
 
