@@ -1,11 +1,12 @@
-{{- /* Version badges + business area for a project page. Input: the page. */ -}}
+{{- /* Business area + version badges for a project page. Input: the page.
+       Laid out by site.css as: date (left) · area (middle) · versions (right). */ -}}
 {{- with .GetTerms "odoo" }}
-<span class="odoo-badges">
-  {{- range sort . "Title" "desc" }}<span class="odoo-badge">Odoo {{ .Title }}</span>{{ end -}}
-</span>
 {{- $areas := slice }}
 {{- range $.Params.tags }}
   {{- if not (in site.Params.nonAreaTags .) }}{{ $areas = $areas | append (. | title) }}{{ end }}
 {{- end }}
-{{- with $areas }}<span class="odoo-areas">{{ delimit . " · " }}</span>{{ end }}
+<span class="odoo-areas">{{ delimit $areas " · " }}</span>
+<span class="odoo-badges">
+  {{- range sort . "Title" "desc" }}<span class="odoo-badge">Odoo {{ .Title }}</span>{{ end -}}
+</span>
 {{- end }}

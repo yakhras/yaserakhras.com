@@ -1,4 +1,4 @@
-{{- /* Overrides PaperMod's post_meta: same date line, followed by the Odoo version badges and area. */ -}}
+{{- /* Overrides PaperMod's post_meta: same date line; on Odoo pages wrapped, followed by the area and the version badges. */ -}}
 {{- $scratch := newScratch }}
 
 {{- if not .Date.IsZero -}}
@@ -16,6 +16,8 @@
 {{- end }}
 
 {{- with ($scratch.Get "meta") }}
+    {{- if $.GetTerms "odoo" }}<span class="meta-main">{{ end }}
     {{- delimit . "&nbsp;·&nbsp;" | safeHTML -}}
+    {{- if $.GetTerms "odoo" }}</span>{{ end }}
 {{- end -}}
 {{- partial "odoo_badges.html" . -}}
