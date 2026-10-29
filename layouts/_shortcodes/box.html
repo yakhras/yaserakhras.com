@@ -1,0 +1,7 @@
+{{- /* Puts a border around a whole section (headings, text, code blocks).
+       Usage:
+       {{< box >}}
+       ## Heading
+       Any markdown…
+       {{< /box >}} */ -}}
+<div class="section-box">{{ $.Page.RenderString (dict "display" "block") .Inner }}</div>

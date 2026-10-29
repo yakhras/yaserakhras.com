@@ -1,0 +1,12 @@
+/* Border around a section, for the {{< box >}} shortcode. Colours come from PaperMod's
+   theme variables, so light and dark mode both work. */
+.section-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 6px 20px 4px;
+    margin: 22px 0 26px;
+}
+.section-box > :last-child { margin-bottom: 18px; }
+@media (max-width: 600px) {
+    .section-box { padding: 4px 12px 2px; }
+}

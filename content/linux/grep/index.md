@@ -301,6 +301,10 @@ web/index.html
 | `-E` | **E**xtended regex | `grep -E 'colou?r' words` | `color` and `colour` |
 | `-A n` | also show *n* lines **A**fter each match | `grep -A1 '^ssh' services` | the `ssh` line + the comment line under it |
 | `-B n` | also show *n* lines **B**efore each match | `grep -B1 '^https' services` | the blank line above + the `https` line |
+| `-w` | match **w**hole words only | `grep -w anna passwd` | only the `anna` line, not `annabel` or `joanna` |
+| `-o` | print **o**nly the matching part | `grep -o 'bash$' passwd` | `bash`, 4 times |
+| `-h` | **h**ide file names (with `-r` or many files) | `grep -rh port .` | `port 22` and `port 80` |
+| `-I` | skip binary files | `grep -rI word .` | text files only, no "Binary file … matches" |
 
 The letter of each option comes from the bold part of its description, which makes them easier to remember.
 
@@ -371,6 +375,92 @@ Only the real settings are left. On a real system this works the same way with `
 
 ---
 
+{{< box >}}
+## Real-life examples: searching source code
+
+The output is real, cut short with `…` where it was long.
+
+### Find any of several words: `\|`
+
+```console
+$ grep -rn "group_ids\|groups_id"
+```
+
+- `\|` means **OR**: match `group_ids` or `groups_id`. It's two symbols: the bar `|` is the OR, and the backslash `\` in front of it is there because we didn't use `-E`. Plain grep uses basic regex, where a bare `|` is just an ordinary character, so the backslash is what turns it into OR. With `-E` you write the bar alone, `|` (see the next example).
+- It isn't limited to two words. Add one `\|` per extra word: `grep -rn "one\|two\|three"` finds lines with any of the three.
+- `-rn`: search every file in the current folder, and show line numbers so you can jump straight there.
+
+The same in one file:
+
+```console
+$ grep -n 't-ref\|canvas' views/graph/graph_renderer.xml
+```
+
+Tip: if you catch yourself writing `'Ref\|ref'`, use `-i ref` instead. It ignores upper and lower case for you.
+
+### The same with `-E`, over many files
+
+```console
+$ grep -nE 'record id=|<menuitem' views/*.xml data/*.xml
+```
+
+- With `-E`, a plain `|` means OR, no backslash needed.
+- `views/*.xml data/*.xml`: `*` means **any file name**, so `views/*.xml` is every file ending in `.xml` inside the `views` folder, whatever it's called (`menus.xml`, `goatcounter_views.xml`, …). The shell (not grep) turns each `*` into that list of files, so grep searches all of them. Every line starts with its file name.
+
+### Group the part that changes: `( )`
+
+```console
+$ grep -nE 'name="(journey|country_id|pageview_ids)"' views/goatcounter_visit_views.xml
+```
+
+Read it as: `name="`, then **one of** the three names, then `"`. The brackets hold only the part that changes, so you don't have to write `name="…"` three times. The quotes on both sides also make it exact: `name="journey_count"` wouldn't match. With only one file, grep doesn't print the file name.
+
+### Find where a function is defined, and why `.*` can trick you
+
+```console
+$ grep -rn 'export.*useRef' .
+```
+
+This finds lines, but none of them is the definition of `useRef`. `.*` accepts *anything* in between, so `this.exportListRef = useRef(` matches too: "export" sits inside `exportListRef`, and "useRef" comes later on the line. The loose part matched far more than I meant.
+
+Be precise instead. `-w` matches **whole words only**, so `useRefListener` no longer counts:
+
+```console
+$ grep -rnw 'function useRef' .
+./lib/owl/owl.js:6216:    function useRef(name) {
+```
+
+One line, the real definition. When `.*` gives you noise, replace it with the exact text you expect.
+
+### Print only the matching part: `-o` and `-h`
+
+```console
+$ grep -rhoE 't-(esc|out|if|foreach)="[a-zA-Z_.]+' web/static/src/views | head -5
+t-out="noContentHelp
+t-if="title
+t-esc="title
+t-if="description
+t-esc="description
+```
+
+- `-o`: print **only** the part that matched, not the whole line.
+- `-h`: **h**ide the file names.
+- `t-(esc|out|if|foreach)="`: one of the four commands, then `="`.
+- `[a-zA-Z_.]+`: one or more letters, underscores or dots, so the name after it (`props.string`, `title`). It stops at the first other character, like `(` or a space.
+- `| head -5`: show only the first 5 lines. There were 615.
+
+Now the real use: count them. `sort` puts equal lines together, `uniq -c` counts each one, and `sort -rn` puts the biggest number first:
+
+```console
+$ grep -rhoE 't-(esc|out|if|foreach)="[a-zA-Z_.]+' web/static/src/views | sort | uniq -c | sort -rn | head -3
+     26 t-if="props.readonly
+     16 t-if="props.record.data
+     13 t-esc="formattedValue
+```
+{{< /box >}}
+
+---
+
 ## Cheat sheet
 
 | Goal | Command |
@@ -382,6 +472,9 @@ Only the real settings are left. On a real system this works the same way with `
 | Everything except X | `grep -v X file` |
 | Search a whole directory | `grep -r word /etc` |
 | Config without comments and blanks | `grep -v -e '^#' -e '^$' file` |
+| Either of two words, whole project | `grep -rnIE 'old_name\|new_name' .` |
+| One of several names in the same spot | `grep -nE 'name="(a\|b\|c)"' file` |
+| Count every different match | `grep -rhoE 'pattern' . \| sort \| uniq -c \| sort -rn` |
 
 ---
 
