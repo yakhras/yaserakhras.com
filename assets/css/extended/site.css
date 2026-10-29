@@ -167,6 +167,13 @@ a.sector-card:hover .sector-logo svg {
     font-size: 13px;
 }
 
+/* Portrait infographic in a post ({{< figure class="infographic" >}}): narrower than the
+   column so it doesn't fill the whole first screen. */
+.post-content figure.infographic img {
+    max-width: min(100%, 520px);
+    margin: 0 auto;
+}
+
 /* Module icon before a card title (page bundle icon.png, the Odoo app icon) */
 .entry-hint-parent:has(> .entry-icon) {
     justify-content: flex-start; /* PaperMod spreads the title row; keep icon and title together */

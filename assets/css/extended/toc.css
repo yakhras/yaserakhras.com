@@ -1,0 +1,29 @@
+/* Table of contents as a sticky sidebar to the right of the article on wide screens.
+   Below 1280px there is no room beside the 720px column, so PaperMod's default
+   (TOC box above the content) stays. Only pages with ShowToc have a .toc. */
+@media (min-width: 1280px) {
+    .post-single .toc {
+        position: fixed;
+        top: 96px;
+        left: calc(50% + var(--main-width) / 2 + var(--gap));
+        width: min(280px, calc(50% - var(--main-width) / 2 - var(--gap) * 2));
+        max-height: calc(100vh - 128px);
+        overflow-y: auto;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .post-single .toc .inner {
+        padding: 0 6px 6px 6px;
+    }
+    .post-single .toc ul {
+        list-style: none;
+        padding-inline-start: 12px;
+    }
+    .post-single .toc .inner > ul {
+        padding-inline-start: 4px;
+    }
+    .post-single .toc li {
+        margin: 3px 0;
+    }
+}

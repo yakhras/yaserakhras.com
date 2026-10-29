@@ -1,11 +1,20 @@
 /* Cards for the {{< regex >}} shortcode. Colours come from PaperMod's theme variables,
-   so light and dark mode both work. */
+   so light and dark mode both work. The green / red / purple accents are set per mode
+   below: the lighter dark-mode shades are too faint for small text on white. */
 .rx-card {
+    --rx-ok: #1f7a52;
+    --rx-no: #c0392b;
+    --rx-ere: #6a55d8;
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 18px 20px 6px;
     margin: 22px 0 26px;
     background: var(--entry);
+}
+[data-theme="dark"] .rx-card {
+    --rx-ok: #4cc38a;
+    --rx-no: #f0766e;
+    --rx-ere: #a594f9;
 }
 .rx-head {
     display: flex;
@@ -34,8 +43,8 @@
     text-transform: uppercase;
     padding: 3px 10px;
     border-radius: 999px;
-    border: 1px solid #8f7cf0;
-    color: #8f7cf0;
+    border: 1px solid var(--rx-ere);
+    color: var(--rx-ere);
     white-space: nowrap;
 }
 .post-content .rx-use {
@@ -58,8 +67,8 @@
     font-weight: 700;
     min-width: 92px;
 }
-.rx-label.rx-ok { color: #2f9e6b; }
-.rx-label.rx-no { color: #d1453b; }
+.rx-label.rx-ok { color: var(--rx-ok); }
+.rx-label.rx-no { color: var(--rx-no); }
 .post-content .rx-card code.rx-chip {
     padding: 3px 10px;
     border-radius: 6px;
@@ -72,7 +81,9 @@
 .post-content .rx-card code.rx-chip.rx-no {
     background: rgba(229, 83, 75, .12);
     border: 1px solid rgba(229, 83, 75, .5);
-    text-decoration: line-through;
 }
 .rx-body { margin-top: 14px; }
 .rx-body > :last-child { margin-bottom: 14px; }
+@media (max-width: 600px) {
+    .rx-card { padding: 14px 12px 2px; }
+}
