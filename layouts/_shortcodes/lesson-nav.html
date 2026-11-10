@@ -1,0 +1,31 @@
+{{- /* Previous / Next bar for a tutorial: a section whose lessons are its pages, ordered by weight.
+       Usage: {{< lesson-nav >}} at the end of each lesson.
+       (PaperMod's own post nav only covers site.Params.mainSections, which is empty on this site.) */ -}}
+{{- $page := .Page }}
+{{- $tutorial := $page.Parent }}
+{{- $lessons := $tutorial.RegularPages.ByWeight }}
+{{- $index := -1 }}
+{{- range $i, $p := $lessons }}{{ if eq $p $page }}{{ $index = $i }}{{ end }}{{ end }}
+{{- if ge $index 0 }}
+<div class="lesson-footer">
+<nav class="paginav lesson-nav">
+  {{- if gt $index 0 }}
+  {{- with index $lessons (sub $index 1) }}
+  <a class="prev" href="{{ .RelPermalink }}">
+    <span class="title">« Previous</span>
+    <span>{{ .Title }}</span>
+  </a>
+  {{- end }}
+  {{- end }}
+  {{- if lt (add $index 1) (len $lessons) }}
+  {{- with index $lessons (add $index 1) }}
+  <a class="next" href="{{ .RelPermalink }}">
+    <span class="title">Next »</span>
+    <span>{{ .Title }}</span>
+  </a>
+  {{- end }}
+  {{- end }}
+</nav>
+<p class="lesson-home">Topic {{ add $index 1 }} of {{ len $lessons }} · <a href="{{ $tutorial.RelPermalink }}">All topics: {{ $tutorial.Title }}</a></p>
+</div>
+{{- end }}

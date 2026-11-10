@@ -1,0 +1,24 @@
+/* Previous / Next bar at the end of a tutorial lesson ({{< lesson-nav >}} shortcode).
+   Pushed down and set off by a line, so it reads as page navigation, not as part of the text.
+   Colours come from PaperMod's theme variables, so light and dark mode both work. */
+.post-content .lesson-footer {
+    margin-top: 120px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+}
+
+.post-content .lesson-nav {
+    margin: 0;
+}
+
+.post-content .lesson-nav a {
+    box-shadow: none;
+    text-decoration: none;
+}
+
+.post-content .lesson-home {
+    margin: 14px 0 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--secondary);
+}
